@@ -7,7 +7,7 @@ public class App {
 
   public static void main(String[] args) {
     //add orders
-    LongStream.range(1, 21)
+    LongStream.range(1, 31)
         .forEach(id -> {
           double price = (id % 10 + id / 10 % 10) / 10.0;
           char side = id % 2 == 1 ? 'A' : 'B';
@@ -17,7 +17,7 @@ public class App {
     nicePrint();
 
     //remove orders
-    LongStream.range(1, 3)
+    LongStream.range(1, 4)
         .forEach(id -> {
           OrderBook.removeOrder(id * 10);
         });
@@ -43,8 +43,11 @@ public class App {
 
     //get all order for side - already used by nicePrint()
     System.out.println("--------------------------------------------------");
-    System.out.println(OrderBook.getOrdersBy('A'));
-    System.out.println(OrderBook.getOrdersBy('B'));
+    System.out.println("Ask orders ordered by level / price ascending and time / id (lower first, earlier created order):");
+    OrderBook.getOrdersBy('A').forEach(System.out::println);
+    System.out.println("--------------------------------------------------");
+    System.out.println("Bid orders ordered by level / price descending and time / id (lower first, earlier created order):");
+    OrderBook.getOrdersBy('B').forEach(System.out::println);
   }
 
   private static void nicePrint() {
