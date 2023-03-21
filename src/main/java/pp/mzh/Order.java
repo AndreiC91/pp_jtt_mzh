@@ -31,6 +31,6 @@ public class Order {
 
   @Override
   public String toString() {
-    return "[" + price + "," + size + "," + side + "]";
+    return side + " " + price + " " + size + " [" + id + "]";
   }
 }

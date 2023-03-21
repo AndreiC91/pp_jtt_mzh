@@ -4,10 +4,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class OrderBook {
@@ -17,6 +17,7 @@ public class OrderBook {
   public static Map<Long, Order> getStorage() {
     return storage;
   }
+
   public static void addOrder(Order order) {
     storage.put(order.getId(), order);
   }
@@ -33,28 +34,56 @@ public class OrderBook {
 
   public static double getPriceForLevel(char side, int level) {
     Set<Double> prices = new TreeSet<>();
-    for (Order order : storage.values()) {
-      if (side == order.getSide()) {
-        prices.add(order.getPrice());
-      }
+
+    storage.values().forEach(
+        order -> {
+          if (side == order.getSide()) {
+            prices.add(order.getPrice());
+          }
+        }
+    );
+
+    if (side == 'A') {
+      return prices.toArray(new Double[storage.size()])[level - 1];
+    } else {
+      return prices.toArray(new Double[storage.size()])[prices.size() - level];
     }
-    return prices.toArray(new Double[storage.size()])[level-1];
   }
 
   public static long getTotalSizeForLevel(char side, int level) {
     Map<Double, Long> priceSizeMap = new TreeMap<>();
-    for (Order order : storage.values()) {
-      if (side == order.getSide()) {
-        priceSizeMap.merge(order.getPrice(), order.getSize(), Long::sum);
-      }
+
+    storage.values().forEach(
+        order -> {
+          if (side == order.getSide()) {
+            priceSizeMap.merge(order.getPrice(), order.getSize(), Long::sum);
+          }
+        }
+    );
+
+    if (side == 'A') {
+      return priceSizeMap.get(priceSizeMap.keySet().toArray(new Double[storage.size()])[level - 1]);
+    } else {
+      return priceSizeMap.get(priceSizeMap.keySet().toArray(new Double[storage.size()])[priceSizeMap.size() - level]);
     }
-    return priceSizeMap.get(priceSizeMap.keySet().toArray(new Double[storage.size()])[level-1]);
   }
 
   public static List<Order> getOrdersBy(char side) {
     return storage.values().stream()
-        .filter(order -> side == order.getSide())
-        .sorted(Comparator.comparing(Order::getPrice))
+        .filter(by(side))
+        .sorted(accordingTo(side))
         .collect(Collectors.toList());
+  }
+
+  private static Predicate<Order> by(final char side) {
+    return order -> side == order.getSide();
+  }
+
+  private static Comparator<? super Order> accordingTo(final char side) {
+    if (side == 'A') {
+      return Comparator.comparing(Order::getPrice);
+    } else {
+      return Comparator.comparing(Order::getPrice, Comparator.reverseOrder());
+    }
   }
 }
