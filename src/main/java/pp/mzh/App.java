@@ -9,11 +9,11 @@ public class App {
     //add orders
     LongStream.range(1, 31)
         .forEach(id -> {
-          double price = (id % 10 + id / 10 % 10) / 10.0;
-          char side = id % 2 == 1 ? 'A' : 'B';
-          OrderBook.addOrder(new Order(id, price, side, id));
+          double price = (id % 10 + id / 10 % 10) / 10.0; // price is digit sum divided by 10
+          char side = id % 2 == 1 ? 'A' : 'B'; // even ids are bid, odd ones are ask
+          OrderBook.addOrder(new Order(id, price, side, id)); // size has the same value as the id
         });
-    System.out.println("All 20 orders added");
+    System.out.println("All 30 orders added");
     nicePrint();
 
     //remove orders
@@ -21,7 +21,7 @@ public class App {
         .forEach(id -> {
           OrderBook.removeOrder(id * 10);
         });
-    System.out.println("Removed 2 orders with id 10 and 20");
+    System.out.println("Removed 3 orders with id 10, 20 and 30");
     nicePrint();
 
     //modify size
