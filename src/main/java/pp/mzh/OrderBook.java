@@ -14,10 +14,6 @@ public class OrderBook {
 
   private static final Map<Long, Order> storage = new HashMap<>();
 
-  public static Map<Long, Order> getStorage() {
-    return storage;
-  }
-
   public static void addOrder(Order order) {
     storage.put(order.getId(), order);
   }
